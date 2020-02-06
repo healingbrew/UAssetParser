@@ -41,7 +41,7 @@ namespace UAssetParser.Objects.Visitors
                     return new UObject(r, s, false, null);
                 }
             } },
-            { "BoolProprety", (r,s,c) => r.ReadByte() == 1 },
+            { "BoolProperty", (r,s,c) => r.ReadByte() == 1 },
             { "IntProperty", (r,s,c) => r.ReadInt32() },
             { "UInt32Property", (r,s,c) => r.ReadUInt32() },
             { "ByteProperty", (r,s,c) =>
