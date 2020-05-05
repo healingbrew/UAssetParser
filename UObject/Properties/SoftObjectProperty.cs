@@ -24,7 +24,7 @@ namespace UObject.Properties
         {
             base.Serialize(ref buffer, asset, ref cursor, mode);
             Package.Serialize(ref buffer, asset, ref cursor);
-            ObjectSerializer.SerializeString(ref buffer, Path ?? "None", ref cursor);
+            ObjectSerializer.SerializeString(ref buffer, Path ?? String.Empty, ref cursor);
         }
     }
 }

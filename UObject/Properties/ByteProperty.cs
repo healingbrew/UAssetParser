@@ -41,9 +41,9 @@ namespace UObject.Properties
 
         public override void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor, SerializationMode mode)
         {
+            base.Serialize(ref buffer, asset, ref cursor);
             if (mode == SerializationMode.Normal)
             {
-                base.Serialize(ref buffer, asset, ref cursor);
                 EnumName.Serialize(ref buffer, asset, ref cursor);
                 Guid.Serialize(ref buffer, asset, ref cursor);
             }

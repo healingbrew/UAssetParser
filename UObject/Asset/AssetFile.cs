@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using DragonLib.IO;
 using JetBrains.Annotations;
 using UObject.Generics;
@@ -44,5 +45,14 @@ namespace UObject.Asset
 
         public Dictionary<string, ISerializableObject> ExportObjects { get; set; } = new Dictionary<string, ISerializableObject>();
         public bool IsSupported => Exports.All(ObjectSerializer.IsSupported);
+
+
+        public void Serialize()
+        {
+            // Update META and Summary, recalculate values
+            // Serialize serial data
+            // Write data
+            throw new NotImplementedException();
+        }
     }
 }

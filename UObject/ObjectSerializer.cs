@@ -6,6 +6,7 @@ using DragonLib.IO;
 using JetBrains.Annotations;
 using UObject.Asset;
 using UObject.Enum;
+using UObject.GameModel.FF7.ObjectModel;
 using UObject.Generics;
 using UObject.ObjectModel;
 using UObject.Properties;
@@ -47,7 +48,8 @@ namespace UObject
         public static Dictionary<string, Type> ClassTypes { get; } = new Dictionary<string, Type>
         {
             { nameof(DataTable), typeof(DataTable) },
-            { nameof(StringTable), typeof(StringTable) }
+            { nameof(StringTable), typeof(StringTable) },
+            { nameof(EndTextResource), typeof(EndTextResource) }
         };
 
         public static AssetFile Deserialize(Span<byte> uasset, Span<byte> uexp, AssetFileOptions options) => new AssetFile(uasset, uexp, options);

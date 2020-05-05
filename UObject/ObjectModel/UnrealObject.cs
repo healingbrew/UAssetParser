@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using UObject.Asset;
 using UObject.Generics;
@@ -27,6 +28,17 @@ namespace UObject.ObjectModel
             }
         }
 
-        public virtual void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor) => throw new NotImplementedException();
+        public virtual void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor)
+        {
+            // TODO: Implement BinarySearch interface for sorted Names
+            var None = new Name();
+            None.Index = asset.Names.Select((x,i) => new { name = x.Name, index = i }).First(x => x.name!.Equals("None")).index;
+            foreach (var prop in Value)
+            {
+                prop.Value.Serialize(ref buffer, asset, ref cursor);
+            }
+            None.Serialize(ref buffer, asset, ref cursor);
+        }
+        
     }
 }

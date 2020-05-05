@@ -10,7 +10,7 @@ namespace UObject.ObjectModel
     [PublicAPI]
     public class DataTable : ISerializableObject
     {
-        public Dictionary<string, UnrealObject> Data { get; set; } = new Dictionary<string, UnrealObject>();
+        public Dictionary<Name, UnrealObject> Data { get; set; } = new Dictionary<Name, UnrealObject>();
         public int Reserved { get; set; }
         public UnrealObject ExportData { get; set; } = new UnrealObject();
 
@@ -29,6 +29,16 @@ namespace UObject.ObjectModel
             }
         }
 
-        public void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor) => throw new NotImplementedException();
+        public void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor)
+        {
+            ExportData.Serialize(ref buffer, asset, ref cursor);
+            SpanHelper.WriteLittleInt(ref buffer, Reserved, ref cursor);
+            SpanHelper.WriteLittleInt(ref buffer, Data.Count, ref cursor);
+            foreach (var obj in Data)
+            {
+                obj.Key.Serialize(ref buffer, asset, ref cursor);
+                obj.Value.Serialize(ref buffer, asset, ref cursor);
+            }
+        }
     }
 }

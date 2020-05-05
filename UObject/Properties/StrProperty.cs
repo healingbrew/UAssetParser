@@ -22,7 +22,7 @@ namespace UObject.Properties
         public override void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor, SerializationMode mode)
         {
             base.Serialize(ref buffer, asset, ref cursor, mode);
-            ObjectSerializer.SerializeString(ref buffer, Value ?? "None", ref cursor);
+            ObjectSerializer.SerializeString(ref buffer, Value ?? String.Empty, ref cursor);
         }
     }
 }

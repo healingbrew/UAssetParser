@@ -24,6 +24,17 @@ namespace UObject.ObjectModel
             for (var i = 0; i < count; ++i) Data.Add(ObjectSerializer.DeserializeString(buffer, ref cursor) ?? $"{cursor:X}", ObjectSerializer.DeserializeString(buffer, ref cursor));
         }
 
-        public void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor) => throw new NotImplementedException();
+        public void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor)
+        {
+            ExportData.Serialize(ref buffer, asset, ref cursor);
+            SpanHelper.WriteLittleInt(ref buffer, Reserved, ref cursor);
+            ObjectSerializer.SerializeString(ref buffer, Name ?? String.Empty, ref cursor);
+            SpanHelper.WriteLittleInt(ref buffer, Data.Count, ref cursor);
+            foreach (var obj in Data)
+            {
+                ObjectSerializer.SerializeString(ref buffer, obj.Key, ref cursor);
+                ObjectSerializer.SerializeString(ref buffer, obj.Value ?? String.Empty, ref cursor);
+            }
+        }
     }
 }

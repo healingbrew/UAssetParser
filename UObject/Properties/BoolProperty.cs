@@ -30,7 +30,7 @@ namespace UObject.Properties
         public override void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor, SerializationMode mode)
         {
             base.Serialize(ref buffer, asset, ref cursor, mode);
-            SpanHelper.WriteByte(ref buffer, (byte) (Value ? 1 : 0), ref cursor);
+            SpanHelper.WriteByte(ref buffer, Convert.ToByte(Value), ref cursor);
             if (mode == SerializationMode.Normal) Guid.Serialize(ref buffer, asset, ref cursor);
         }
     }

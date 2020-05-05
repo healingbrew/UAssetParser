@@ -57,8 +57,8 @@ namespace UObject.Properties
                 if ((SerializationFlags & 8) == 8) ValueGuid.Serialize(ref buffer, asset, ref cursor);
                 if (Flags != 0xFF)
                 {
-                    ObjectSerializer.SerializeString(ref buffer, Hash ?? "None", ref cursor);
-                    ObjectSerializer.SerializeString(ref buffer, Value ?? "None", ref cursor);
+                    ObjectSerializer.SerializeString(ref buffer, Hash ?? string.Empty, ref cursor);
+                    ObjectSerializer.SerializeString(ref buffer, Value ?? string.Empty, ref cursor);
                 }
             }
         }
