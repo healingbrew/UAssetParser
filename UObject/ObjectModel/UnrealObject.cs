@@ -24,7 +24,7 @@ namespace UObject.ObjectModel
                 // rollback
                 cursor = tmp;
                 var property = ObjectSerializer.DeserializeProperty(buffer, asset, ref cursor);
-                Value[property.Tag?.Name.Value ?? $"{cursor:X}"] = property;
+                Value[property.Tag?.Name.Value ?? $"@$None_{cursor:X}"] = property;
             }
         }
 

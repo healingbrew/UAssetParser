@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -39,6 +40,24 @@ namespace UObject2JSON
                 else if (File.Exists(path)) paths.Add(path);
             }
 
+            var executingDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) ?? "./";
+            foreach (var asmName in flags.GameModels)
+            {
+                if (!flags.Quiet) Logger.Info("UAsset", $"Loading plugin {asmName}");
+                if (File.Exists(asmName))
+                    ObjectSerializer.LoadGameModel(Path.Combine(executingDir, asmName));
+                else if (File.Exists(Path.Combine(executingDir, asmName)))
+                    ObjectSerializer.LoadGameModel(Path.Combine(executingDir, asmName));
+                else if (File.Exists(Path.Combine(executingDir, $"{asmName}.dll")))
+                    ObjectSerializer.LoadGameModel(Path.Combine(executingDir, $"{asmName}.dll"));
+                else if (File.Exists(Path.Combine(executingDir, $"UObject.{asmName}")))
+                    ObjectSerializer.LoadGameModel(Path.Combine(executingDir, $"UObject.{asmName}"));
+                else if (File.Exists(Path.Combine(executingDir, $"UObject.{asmName}.dll")))
+                    ObjectSerializer.LoadGameModel(Path.Combine(executingDir, $"UObject.{asmName}.dll"));
+                else
+                    Logger.Error("UAsset", $"Could not resolve {asmName}!");
+            }
+
             var settings = new JsonSerializerOptions
             {
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -48,6 +67,7 @@ namespace UObject2JSON
                     flags.Typeless ? (JsonConverter) new GenericTypelessDictionaryConverterFactory() : new GenericDictionaryConverterFactory(),
                     flags.Typeless ? (JsonConverter) new GenericTypelessListConverterFactory() : new GenericListConverterFactory(),
                     new ValueTypeConverterFactory(flags.Typeless),
+                    new NameDictionaryConverterFactory(),
                     new UnrealObjectConverter(),
                     new NoneStringConverter()
                 }
@@ -65,7 +85,7 @@ namespace UObject2JSON
                 var arg = Path.Combine(Path.GetDirectoryName(path) ?? ".", Path.GetFileNameWithoutExtension(path));
                 var uasset = File.ReadAllBytes(arg + ".uasset");
                 var uexp = File.Exists(arg + ".uexp") ? File.ReadAllBytes(arg + ".uexp") : Span<byte>.Empty;
-                if (!flags.Quiet) Logger.Info("UAsset", arg);
+                if (!flags.Quiet) Logger.Info("UAsset", $"Parsing {arg}...");
                 try
                 {
                     var asset = ObjectSerializer.Deserialize(uasset, uexp, options);

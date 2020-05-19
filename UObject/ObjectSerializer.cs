@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using DragonLib.IO;
 using JetBrains.Annotations;
 using UObject.Asset;
 using UObject.Enum;
-using UObject.GameModel.FF7.ObjectModel;
 using UObject.Generics;
 using UObject.ObjectModel;
 using UObject.Properties;
@@ -17,40 +17,68 @@ namespace UObject
     [PublicAPI]
     public static class ObjectSerializer
     {
-        public static Dictionary<string, Type> PropertyTypes { get; } = new Dictionary<string, Type>
-        {
-            { nameof(ObjectProperty), typeof(ObjectProperty) },
-            { nameof(SoftObjectProperty), typeof(SoftObjectProperty) },
-            { nameof(StructProperty), typeof(StructProperty) },
-            { nameof(NameProperty), typeof(NameProperty) },
-            { nameof(StrProperty), typeof(StrProperty) },
-            { nameof(TextProperty), typeof(TextProperty) },
-            { nameof(ArrayProperty), typeof(ArrayProperty) },
-            { nameof(MapProperty), typeof(MapProperty) },
-            { nameof(EnumProperty), typeof(EnumProperty) },
-            { nameof(ByteProperty), typeof(ByteProperty) },
-            { "ShortProperty", typeof(Int16Property) },
-            { "UShortProperty", typeof(UInt16Property) },
-            { "IntProperty", typeof(Int32Property) },
-            { "UIntProperty", typeof(UInt32Property) },
-            { "LongProperty", typeof(Int64Property) },
-            { "ULongProperty", typeof(UInt64Property) },
-            { nameof(Int16Property), typeof(Int16Property) },
-            { nameof(UInt16Property), typeof(UInt16Property) },
-            { nameof(Int32Property), typeof(Int32Property) },
-            { nameof(UInt32Property), typeof(UInt32Property) },
-            { nameof(Int64Property), typeof(Int64Property) },
-            { nameof(UInt64Property), typeof(UInt64Property) },
-            { nameof(FloatProperty), typeof(FloatProperty) },
-            { nameof(BoolProperty), typeof(BoolProperty) }
-        };
+        private static readonly Type GameModelType = typeof(GameModel);
 
-        public static Dictionary<string, Type> ClassTypes { get; } = new Dictionary<string, Type>
+        static ObjectSerializer() => Reset();
+
+        public static Dictionary<string, Type> PropertyTypes { get; private set; } = null!;
+
+        public static Dictionary<string, Type> StructTypes { get; private set; } = null!;
+
+        public static Dictionary<string, Type> ClassTypes { get; private set; } = null!;
+
+        public static Dictionary<string, GameModel> GameModels { get; private set; } = new Dictionary<string, GameModel>();
+
+        public static void Reset()
         {
-            { nameof(DataTable), typeof(DataTable) },
-            { nameof(StringTable), typeof(StringTable) },
-            { nameof(EndTextResource), typeof(EndTextResource) }
-        };
+            GameModelLoadContext.Instance.Value.Unload();
+
+            GameModels = new Dictionary<string, GameModel>();
+
+            PropertyTypes = new Dictionary<string, Type>
+            {
+                { nameof(ObjectProperty), typeof(ObjectProperty) },
+                { nameof(SoftObjectProperty), typeof(SoftObjectProperty) },
+                { nameof(StructProperty), typeof(StructProperty) },
+                { nameof(NameProperty), typeof(NameProperty) },
+                { nameof(StrProperty), typeof(StrProperty) },
+                { nameof(TextProperty), typeof(TextProperty) },
+                { nameof(ArrayProperty), typeof(ArrayProperty) },
+                { nameof(MapProperty), typeof(MapProperty) },
+                { nameof(EnumProperty), typeof(EnumProperty) },
+                { nameof(ByteProperty), typeof(ByteProperty) },
+                { "ShortProperty", typeof(Int16Property) },
+                { "UShortProperty", typeof(UInt16Property) },
+                { "IntProperty", typeof(Int32Property) },
+                { "UIntProperty", typeof(UInt32Property) },
+                { "LongProperty", typeof(Int64Property) },
+                { "ULongProperty", typeof(UInt64Property) },
+                { nameof(Int16Property), typeof(Int16Property) },
+                { nameof(UInt16Property), typeof(UInt16Property) },
+                { nameof(Int32Property), typeof(Int32Property) },
+                { nameof(UInt32Property), typeof(UInt32Property) },
+                { nameof(Int64Property), typeof(Int64Property) },
+                { nameof(UInt64Property), typeof(UInt64Property) },
+                { nameof(FloatProperty), typeof(FloatProperty) },
+                { nameof(BoolProperty), typeof(BoolProperty) }
+            };
+            StructTypes = new Dictionary<string, Type>
+            {
+                { nameof(Box), typeof(Box) },
+                { nameof(Box2D), typeof(Box2D) },
+                { nameof(Color), typeof(Color) },
+                { nameof(IntPoint), typeof(IntPoint) },
+                { nameof(LinearColor), typeof(LinearColor) },
+                { nameof(Rotator), typeof(Rotator) },
+                { nameof(Vector), typeof(Vector) },
+                { nameof(Vector2D), typeof(Vector2D) }
+            };
+            ClassTypes = new Dictionary<string, Type>
+            {
+                { nameof(DataTable), typeof(DataTable) },
+                { nameof(StringTable), typeof(StringTable) }
+            };
+        }
 
         public static AssetFile Deserialize(Span<byte> uasset, Span<byte> uexp, AssetFileOptions options) => new AssetFile(uasset, uexp, options);
 
@@ -89,11 +117,7 @@ namespace UObject
         public static AbstractProperty DeserializeProperty(Span<byte> buffer, AssetFile asset, PropertyTag tag, Name serializationType, int offset, ref int cursor, SerializationMode mode)
         {
             if (serializationType == null) throw new InvalidDataException();
-            if (!PropertyTypes.TryGetValue(serializationType, out var propertyType))
-            {
-                Logger.Error("UObject", $"No Handler for property {tag.Name.Value} which has the type {serializationType.Value} at offset {offset:X} (size {tag.Size})");
-                throw new NotImplementedException($"No Handler for property {tag.Name.Value} which has the type {serializationType.Value} at offset {offset:X} (size {tag.Size})");
-            }
+            if (!PropertyTypes.TryGetValue(serializationType, out var propertyType)) throw new NotImplementedException($"No Handler for property {tag.Name.Value} which has the type {serializationType.Value} at offset {offset:X} (size {tag.Size})");
 
             if (!(Activator.CreateInstance(propertyType) is AbstractProperty instance)) throw new InvalidDataException();
             instance.Deserialize(buffer, asset, ref cursor, mode);
@@ -166,31 +190,30 @@ namespace UObject
         public static object? DeserializeStruct(Span<byte> buffer, AssetFile asset, string structName, ref int cursor)
         {
             if (structName == null) throw new InvalidDataException();
-            switch (structName)
+
+            if (!StructTypes.TryGetValue(structName, out var structType))
             {
-                case nameof(Box):
-                    return SpanHelper.ReadStruct<Box>(buffer, ref cursor);
-                case nameof(Box2D):
-                    return SpanHelper.ReadStruct<Box2D>(buffer, ref cursor);
-                case nameof(Color):
-                    return SpanHelper.ReadStruct<Color>(buffer, ref cursor);
-                case nameof(IntPoint):
-                    return SpanHelper.ReadStruct<IntPoint>(buffer, ref cursor);
-                case nameof(LinearColor):
-                    return SpanHelper.ReadStruct<LinearColor>(buffer, ref cursor);
-                case nameof(Rotator):
-                    return SpanHelper.ReadStruct<Rotator>(buffer, ref cursor);
-                case nameof(Vector):
-                    return SpanHelper.ReadStruct<Vector>(buffer, ref cursor);
-                case nameof(Vector2D):
-                    return SpanHelper.ReadStruct<Vector2D>(buffer, ref cursor);
-                default:
-                {
-                    var obj = new UnrealObject();
-                    obj.Deserialize(buffer, asset, ref cursor);
-                    return obj;
-                }
+                var obj = new UnrealObject();
+                obj.Deserialize(buffer, asset, ref cursor);
+                return obj;
             }
+
+            return SpanHelper.ReadStruct(buffer, structType, ref cursor);
+        }
+
+        public static void LoadGameModel(string path) => LoadGameModel(GameModelLoadContext.Instance.Value.LoadFromAssemblyPath(path));
+
+        public static void LoadGameModel(AssemblyName assemblyName) => LoadGameModel(GameModelLoadContext.Instance.Value.LoadFromAssemblyName(assemblyName));
+
+        public static void LoadGameModel(Assembly asm)
+        {
+            var typeAttribute = asm.GetCustomAttribute<AssemblyDescriptionAttribute>();
+            if (typeAttribute == null || string.IsNullOrEmpty(typeAttribute.Description)) return;
+            var type = asm.GetType(typeAttribute.Description);
+            if (type == null) return;
+            var nameAttribute = asm.GetCustomAttribute<AssemblyTitleAttribute>();
+            if (!(Activator.CreateInstance(type) is GameModel instance)) return;
+            GameModels[nameAttribute?.Title ?? typeAttribute.Description] = instance;
         }
 
         public static bool IsSupported(ObjectExport export) => ClassTypes.ContainsKey(export.ClassIndex.Name ?? "None");

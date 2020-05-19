@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UObject", "UObject\UObject.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UObject2JSON", "UObject2JSON\UObject2JSON.csproj", "{C5CCCB12-BDF8-482A-B4BD-87D3117DAEDB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UObject.EndGame", "UObject.EndGame\UObject.EndGame.csproj", "{9C005A40-A872-4EFE-BCC8-80950915878D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{C5CCCB12-BDF8-482A-B4BD-87D3117DAEDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5CCCB12-BDF8-482A-B4BD-87D3117DAEDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5CCCB12-BDF8-482A-B4BD-87D3117DAEDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C005A40-A872-4EFE-BCC8-80950915878D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C005A40-A872-4EFE-BCC8-80950915878D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C005A40-A872-4EFE-BCC8-80950915878D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C005A40-A872-4EFE-BCC8-80950915878D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

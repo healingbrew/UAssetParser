@@ -38,13 +38,22 @@ namespace UObject.Properties
                         Namespace = ObjectSerializer.DeserializeString(buffer, ref cursor);
                     }
 
-                    if (TextPresent == 1)
+                    // TODO: Find a model that has TextPresent > 1.
+                    if (TextPresent > 0)
                         ValueGuid.Deserialize(buffer, asset, ref cursor);
                     Hashkey = ObjectSerializer.DeserializeString(buffer, ref cursor);
                 }
 
-                if (TextPresent == 1 || KeyPresent == 0)
+                if (TextPresent > 0 || KeyPresent == 0)
+                {
+                    if (TextPresent > 1) Logger.Assert(SpanHelper.ReadLittleInt(buffer, ref cursor) == 0, "SpanHelper.ReadLittleInt(buffer, ref cursor) == 0");
                     Value = ObjectSerializer.DeserializeString(buffer, ref cursor);
+                }
+            }
+            else
+            {
+                // TODO: Verify, this is needed for one of the cases. KeyPresent is 0xFF.
+                if (KeyPresent == 0xFF) cursor -= 4;
             }
         }
 

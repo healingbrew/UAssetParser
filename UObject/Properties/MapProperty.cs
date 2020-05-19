@@ -39,9 +39,9 @@ namespace UObject.Properties
                 var key = ObjectSerializer.DeserializeProperty(buffer, asset, Tag ?? new PropertyTag(), KeyType, cursor, ref cursor, SerializationMode.Map);
 
                 if (ValueType == "StructProperty")
-                    Value[key.ToString() ?? $"{cursor:X}"] = ObjectSerializer.DeserializeStruct(buffer, asset, "None", ref cursor);
+                    Value[key.ToString() ?? $"@$None_{cursor:X}"] = ObjectSerializer.DeserializeStruct(buffer, asset, "None", ref cursor);
                 else
-                    Value[key.ToString() ?? $"{cursor:X}"] = ObjectSerializer.DeserializeProperty(buffer, asset, Tag ?? new PropertyTag(), ValueType, cursor, ref cursor, valueMode);
+                    Value[key.ToString() ?? $"@$None_{cursor:X}"] = ObjectSerializer.DeserializeProperty(buffer, asset, Tag ?? new PropertyTag(), ValueType, cursor, ref cursor, valueMode);
             }
         }
 

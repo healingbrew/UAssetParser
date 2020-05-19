@@ -1,17 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <RuntimeIdentifiers>win10-x64;osx-x64;linux-x64</RuntimeIdentifiers>
-        <NoWarn>1701;1702;NU1701</NoWarn>
         <Nullable>enable</Nullable>
         <LangVersion>8.0</LangVersion>
-        <Version>1.0.0</Version>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Description>EndGameModel</Description>
+        <Title>EndGame</Title>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\UObject.EndGame\UObject.EndGame.csproj" />
       <ProjectReference Include="..\UObject\UObject.csproj" />
     </ItemGroup>
 

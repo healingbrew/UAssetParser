@@ -19,7 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="DragonLib" Version="1.0.5" />
+      <PackageReference Include="DragonLib" Version="1.0.6" />
     </ItemGroup>
     
 </Project>
