@@ -9,10 +9,10 @@ using UObject.JSON;
 namespace UObject.GameModel.FF7.Properties
 {
     [PublicAPI]
-    public class FF7TxtRes: IArrayValueType<Dictionary<Name,string?>?>
+    public class FF7TxtRes : IArrayValueType<Dictionary<Name, string?>?>
     {
         public string? Str { get; set; }
-        public Dictionary<Name, string?>? Value { get; set; } 
+        public Dictionary<Name, string?>? Value { get; set; }
 
         public void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
@@ -20,11 +20,11 @@ namespace UObject.GameModel.FF7.Properties
             var count = SpanHelper.ReadLittleInt(buffer, ref cursor);
             if (count > 0)
                 Value = new Dictionary<Name, string?>();
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 var fname = new Name();
                 fname.Deserialize(buffer, asset, ref cursor);
-                string? data = ObjectSerializer.DeserializeString(buffer, ref cursor);
+                var data = ObjectSerializer.DeserializeString(buffer, ref cursor);
                 Value?.Add(fname, data);
             }
         }
@@ -32,7 +32,5 @@ namespace UObject.GameModel.FF7.Properties
         public void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor)
         {
         }
-
-       
     }
 }

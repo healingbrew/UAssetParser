@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using DragonLib.IO;
 using JetBrains.Annotations;
 using UObject.Asset;
@@ -38,10 +37,12 @@ namespace UObject.Properties
                         cursor -= 4;
                         Namespace = ObjectSerializer.DeserializeString(buffer, ref cursor);
                     }
+
                     if (TextPresent == 1)
                         ValueGuid.Deserialize(buffer, asset, ref cursor);
                     Hashkey = ObjectSerializer.DeserializeString(buffer, ref cursor);
                 }
+
                 if (TextPresent == 1 || KeyPresent == 0)
                     Value = ObjectSerializer.DeserializeString(buffer, ref cursor);
             }

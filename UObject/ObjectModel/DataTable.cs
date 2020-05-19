@@ -34,10 +34,10 @@ namespace UObject.ObjectModel
             ExportData.Serialize(ref buffer, asset, ref cursor);
             SpanHelper.WriteLittleInt(ref buffer, Reserved, ref cursor);
             SpanHelper.WriteLittleInt(ref buffer, Data.Count, ref cursor);
-            foreach (var obj in Data)
+            foreach (var (key, value) in Data)
             {
-                obj.Key.Serialize(ref buffer, asset, ref cursor);
-                obj.Value.Serialize(ref buffer, asset, ref cursor);
+                key.Serialize(ref buffer, asset, ref cursor);
+                value.Serialize(ref buffer, asset, ref cursor);
             }
         }
     }

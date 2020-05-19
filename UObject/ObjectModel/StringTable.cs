@@ -30,10 +30,10 @@ namespace UObject.ObjectModel
             SpanHelper.WriteLittleInt(ref buffer, Reserved, ref cursor);
             ObjectSerializer.SerializeString(ref buffer, Name ?? String.Empty, ref cursor);
             SpanHelper.WriteLittleInt(ref buffer, Data.Count, ref cursor);
-            foreach (var obj in Data)
+            foreach (var (key, value) in Data)
             {
-                ObjectSerializer.SerializeString(ref buffer, obj.Key, ref cursor);
-                ObjectSerializer.SerializeString(ref buffer, obj.Value ?? String.Empty, ref cursor);
+                ObjectSerializer.SerializeString(ref buffer, key, ref cursor);
+                ObjectSerializer.SerializeString(ref buffer, value ?? String.Empty, ref cursor);
             }
         }
     }

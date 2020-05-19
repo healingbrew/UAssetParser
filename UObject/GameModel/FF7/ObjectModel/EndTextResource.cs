@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using DragonLib.IO;
 using JetBrains.Annotations;
 using UObject.Asset;
-using UObject.Generics;
 using UObject.GameModel.FF7.Properties;
+using UObject.Generics;
 using UObject.ObjectModel;
-using System.IO;
 
 namespace UObject.GameModel.FF7.ObjectModel
 {
@@ -22,7 +22,7 @@ namespace UObject.GameModel.FF7.ObjectModel
             ExportData.Deserialize(buffer, asset, ref cursor);
             Reserved = SpanHelper.ReadLittleInt(buffer, ref cursor);
             var count = SpanHelper.ReadLittleInt(buffer, ref cursor);
-            for (int i = 0; i < count; ++i)
+            for (var i = 0; i < count; ++i)
             {
                 var key = ObjectSerializer.DeserializeString(buffer, ref cursor);
                 if (string.IsNullOrEmpty(key) || key[0] != '$')
