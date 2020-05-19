@@ -74,6 +74,11 @@ namespace UObject.Properties
                     ObjectSerializer.SerializeString(ref buffer, Value ?? string.Empty, ref cursor);
                 }
             }
+            else
+            {
+                // TODO: Verify, this is needed for one of the cases. KeyPresent is 0xFF.
+                if (KeyPresent == 0xFF) SpanHelper.WriteLittleDouble(ref buffer, 0, ref cursor);
+            }
         }
     }
 }
