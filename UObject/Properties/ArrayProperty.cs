@@ -65,7 +65,7 @@ namespace UObject.Properties
                 case List<object?> list:
                 {
                     SpanHelper.WriteLittleInt(ref buffer, list.Count, ref cursor);
-                    foreach (AbstractProperty prop in list)
+                    foreach (AbstractProperty? prop in list)
                         prop?.Serialize(ref buffer, asset, ref cursor);
                     break;
                 }
