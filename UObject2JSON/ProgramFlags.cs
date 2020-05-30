@@ -33,6 +33,6 @@ namespace UObject2JSON
 
         [UsedImplicitly]
         [CLIFlag("game", Aliases = new[] { "g" }, Category = "Program Arguments", Help = "Game DLL to load")]
-        public List<string> GameModels { get; set; } = new List<string>();
+        public List<string>? GameModels { get; set; }
     }
 }

@@ -27,13 +27,15 @@ namespace UObject
 
         public static Dictionary<string, Type> ClassTypes { get; private set; } = null!;
 
-        public static Dictionary<string, GameModel> GameModels { get; private set; } = new Dictionary<string, GameModel>();
+        public static Dictionary<string, (GameModelLoadContext, GameModel)> GameModels { get; private set; } = new Dictionary<string, (GameModelLoadContext, GameModel)>();
 
         public static void Reset()
         {
-            GameModelLoadContext.Instance.Value.Unload();
-
-            GameModels = new Dictionary<string, GameModel>();
+            foreach (var (_, (context, _)) in GameModels)
+            {
+                context.Unload();
+            }
+            GameModels.Clear();
 
             PropertyTypes = new Dictionary<string, Type>
             {
@@ -201,19 +203,17 @@ namespace UObject
             return SpanHelper.ReadStruct(buffer, structType, ref cursor);
         }
 
-        public static void LoadGameModel(string path) => LoadGameModel(GameModelLoadContext.Instance.Value.LoadFromAssemblyPath(path));
-
-        public static void LoadGameModel(AssemblyName assemblyName) => LoadGameModel(GameModelLoadContext.Instance.Value.LoadFromAssemblyName(assemblyName));
-
-        public static void LoadGameModel(Assembly asm)
+        public static void LoadGameModel(string path)
         {
+            var context = new GameModelLoadContext(path);
+            var asm = context.LoadFromAssemblyPath(path);
             var typeAttribute = asm.GetCustomAttribute<AssemblyDescriptionAttribute>();
             if (typeAttribute == null || string.IsNullOrEmpty(typeAttribute.Description)) return;
             var type = asm.GetType(typeAttribute.Description);
             if (type == null) return;
             var nameAttribute = asm.GetCustomAttribute<AssemblyTitleAttribute>();
             if (!(Activator.CreateInstance(type) is GameModel instance)) return;
-            GameModels[nameAttribute?.Title ?? typeAttribute.Description] = instance;
+            GameModels[nameAttribute?.Title ?? typeAttribute.Description] = (context, instance);
         }
 
         public static bool IsSupported(ObjectExport export) => ClassTypes.ContainsKey(export.ClassIndex.Name ?? "None");

@@ -41,7 +41,7 @@ namespace UObject2JSON
             }
 
             var executingDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) ?? "./";
-            foreach (var asmName in flags.GameModels)
+            foreach (var asmName in flags.GameModels ?? new List<string>())
             {
                 if (!flags.Quiet) Logger.Info("UAsset", $"Loading plugin {asmName}");
                 if (File.Exists(asmName))
