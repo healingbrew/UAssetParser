@@ -31,10 +31,7 @@ namespace UObject
 
         public static void Reset()
         {
-            foreach (var (_, (context, _)) in GameModels)
-            {
-                context.Unload();
-            }
+            foreach (var (_, (context, _)) in GameModels) context.Unload();
             GameModels.Clear();
 
             PropertyTypes = new Dictionary<string, Type>
