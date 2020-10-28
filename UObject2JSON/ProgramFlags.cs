@@ -31,6 +31,9 @@ namespace UObject2JSON
         [CLIFlag("quiet", Default = false, Aliases = new[] { "q" }, Category = "Program Arguments", Help = "Suppress output messages")]
         public bool Quiet { get; set; }
 
+        [CLIFlag("strip", Default = false, Aliases = new[] { "s" }, Category = "Program Arguments", Help = "Strip hashes and indices from DataTable names")]
+        public bool StripNames { get; set; }
+
         [UsedImplicitly]
         [CLIFlag("game", Aliases = new[] { "g" }, Category = "Program Arguments", Help = "Game DLL to load")]
         public List<string>? GameModels { get; set; }

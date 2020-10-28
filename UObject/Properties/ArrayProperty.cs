@@ -44,7 +44,7 @@ namespace UObject.Properties
             else
             {
                 var arrayMode = SerializationMode.Array;
-                if (ArrayType == "ByteProperty" && Tag?.Size > 0 && (Tag?.Size - 4) / count == 1) arrayMode &= SerializationMode.PureByteArray;
+                if (ArrayType == "ByteProperty" && count > 0 && Tag?.Size > 0 && (Tag?.Size - 4) / count == 1) arrayMode |= SerializationMode.PureByteArray;
                 for (var i = 0; i < count; ++i) value.Add(ObjectSerializer.DeserializeProperty(buffer, asset, Tag ?? new PropertyTag(), ArrayType, cursor, ref cursor, arrayMode));
                 Value = value;
             }

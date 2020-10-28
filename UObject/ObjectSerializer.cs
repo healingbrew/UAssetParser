@@ -59,7 +59,7 @@ namespace UObject
                 { nameof(Int64Property), typeof(Int64Property) },
                 { nameof(UInt64Property), typeof(UInt64Property) },
                 { nameof(FloatProperty), typeof(FloatProperty) },
-                { nameof(BoolProperty), typeof(BoolProperty) }
+                { nameof(BoolProperty), typeof(BoolProperty) },
             };
             StructTypes = new Dictionary<string, Type>
             {
@@ -70,12 +70,13 @@ namespace UObject
                 { nameof(LinearColor), typeof(LinearColor) },
                 { nameof(Rotator), typeof(Rotator) },
                 { nameof(Vector), typeof(Vector) },
-                { nameof(Vector2D), typeof(Vector2D) }
+                { nameof(Quat), typeof(Quat) },
+                { nameof(Vector2D), typeof(Vector2D) },
             };
             ClassTypes = new Dictionary<string, Type>
             {
                 { nameof(DataTable), typeof(DataTable) },
-                { nameof(StringTable), typeof(StringTable) }
+                { nameof(StringTable), typeof(StringTable) },
             };
         }
 

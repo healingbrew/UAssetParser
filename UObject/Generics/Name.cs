@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text.Json.Serialization;
 using DragonLib.IO;
 using JetBrains.Annotations;
@@ -22,6 +23,15 @@ namespace UObject.Generics
             InstanceNum = SpanHelper.ReadLittleInt(buffer, ref cursor);
             if (asset.Names.Length < Index || Index < 0) return;
             Value = asset.Names[Index].Name;
+
+            if (asset.Options?.StripNames != true) return;
+
+            var parts = Value?.Split('_') ?? Array.Empty<string>();
+
+            if (parts.Length >= 3 && parts[^1].Length == 32 && parts[^2].Length > 0 && parts[^2].All(char.IsDigit))
+            {
+                Value = string.Join('_', parts[..^2]);
+            }
         }
 
         public void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor)

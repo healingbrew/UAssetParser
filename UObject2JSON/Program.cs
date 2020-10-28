@@ -69,7 +69,7 @@ namespace UObject2JSON
                     new ValueTypeConverterFactory(flags.Typeless),
                     new NameDictionaryConverterFactory(),
                     new UnrealObjectConverter(),
-                    new NoneStringConverter()
+                    new NoneStringConverter(),
                 }
             };
 
@@ -77,7 +77,8 @@ namespace UObject2JSON
             {
                 UnrealVersion = flags.UnrealVersion,
                 Workaround = flags.Workaround,
-                Dry = flags.Dry
+                Dry = flags.Dry,
+                StripNames = flags.StripNames,
             };
 
             foreach (var path in paths)
