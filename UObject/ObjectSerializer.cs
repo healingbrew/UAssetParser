@@ -43,6 +43,7 @@ namespace UObject
                 { nameof(StrProperty), typeof(StrProperty) },
                 { nameof(TextProperty), typeof(TextProperty) },
                 { nameof(ArrayProperty), typeof(ArrayProperty) },
+                { nameof(SetProperty), typeof(SetProperty) },
                 { nameof(MapProperty), typeof(MapProperty) },
                 { nameof(EnumProperty), typeof(EnumProperty) },
                 { nameof(ByteProperty), typeof(ByteProperty) },
@@ -148,7 +149,7 @@ namespace UObject
             foreach (var instance in instances) instance.Serialize(ref buffer, asset, ref cursor);
         }
 
-        public static void SerializeString(ref Memory<byte> buffer, string text, ref int cursor)
+        public static void SerializeString(ref Memory<byte> buffer, string? text, ref int cursor)
         {
             if (text == null) return;
             if (text == string.Empty)

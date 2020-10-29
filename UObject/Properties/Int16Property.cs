@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using DragonLib.IO;
 using JetBrains.Annotations;
@@ -19,6 +20,7 @@ namespace UObject.Properties
         public override void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor, SerializationMode mode)
         {
             base.Deserialize(buffer, asset, ref cursor, mode);
+            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(Int16Property)} at {cursor:X}");
             Value = SpanHelper.ReadLittleShort(buffer, ref cursor);
         }
 

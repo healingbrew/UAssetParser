@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using DragonLib.IO;
 using JetBrains.Annotations;
@@ -34,6 +35,7 @@ namespace UObject.Asset
 
         public void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
+            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(PackageIndex)} at {cursor:X}");
             Index = SpanHelper.ReadLittleInt(buffer, ref cursor);
             var importIndex = 0 - Index - 1;
             var exportIndex = Index - 1;

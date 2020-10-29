@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using DragonLib.IO;
 using JetBrains.Annotations;
@@ -26,6 +27,7 @@ namespace UObject.Properties
         {
             Logger.Assert(mode == SerializationMode.Normal, "mode == SerializationMode.Normal");
             base.Deserialize(buffer, asset, ref cursor, mode);
+            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(MapProperty)} at {cursor:X}");
             KeyType.Deserialize(buffer, asset, ref cursor);
             ValueType.Deserialize(buffer, asset, ref cursor);
             Guid.Deserialize(buffer, asset, ref cursor);

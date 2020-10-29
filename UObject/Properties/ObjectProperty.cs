@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using UObject.Asset;
@@ -19,6 +20,7 @@ namespace UObject.Properties
         public override void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor, SerializationMode mode)
         {
             base.Deserialize(buffer, asset, ref cursor, mode);
+            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(ObjectProperty)} at {cursor:X}");
             if (mode == SerializationMode.Normal) Guid.Deserialize(buffer, asset, ref cursor);
             Value.Deserialize(buffer, asset, ref cursor);
         }

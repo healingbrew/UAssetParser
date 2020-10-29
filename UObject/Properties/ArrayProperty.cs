@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text.Json.Serialization;
 using DragonLib.IO;
@@ -25,6 +26,7 @@ namespace UObject.Properties
         {
             Logger.Assert(mode == SerializationMode.Normal, "mode == SerializationMode.Normal");
             base.Deserialize(buffer, asset, ref cursor, mode);
+            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(ArrayProperty)} at {cursor:X}");
             ArrayType.Deserialize(buffer, asset, ref cursor);
             Guid.Deserialize(buffer, asset, ref cursor);
 #if DEBUG
@@ -46,8 +48,8 @@ namespace UObject.Properties
                 var arrayMode = SerializationMode.Array;
                 if (ArrayType == "ByteProperty" && count > 0 && Tag?.Size > 0 && (Tag?.Size - 4) / count == 1) arrayMode |= SerializationMode.PureByteArray;
                 for (var i = 0; i < count; ++i) value.Add(ObjectSerializer.DeserializeProperty(buffer, asset, Tag ?? new PropertyTag(), ArrayType, cursor, ref cursor, arrayMode));
-                Value = value;
             }
+            Value = value;
 #if DEBUG
             if (ArrayType != "StructProperty" && cursor != start + Tag?.Size)
                 throw new InvalidOperationException("ARRAY SIZE OFFSHOOT");

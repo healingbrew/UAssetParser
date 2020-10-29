@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
 using UObject.Asset;
@@ -15,6 +16,7 @@ namespace UObject.ObjectModel
 
         public virtual void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
+            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(UnrealObject)} at {cursor:X}");
             while (true)
             {
                 var tmp = cursor;

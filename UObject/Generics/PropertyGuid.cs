@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+
 using DragonLib.IO;
 using JetBrains.Annotations;
 using UObject.Asset;
@@ -14,6 +16,7 @@ namespace UObject.Generics
 
         public void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
+            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(PropertyGuid)} at {cursor:X}");
             var boolByte = SpanHelper.ReadByte(buffer, ref cursor);
             Logger.Assert(boolByte <= 1, "boolByte <= 1");
             var hasGuid = boolByte == 1;

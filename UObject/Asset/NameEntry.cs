@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+
 using DragonLib.IO;
 using JetBrains.Annotations;
 using UObject.Generics;
@@ -15,6 +17,7 @@ namespace UObject.Asset
 
         public void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
+            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(NameEntry)} at {cursor:X}");
             Name = ObjectSerializer.DeserializeString(buffer, ref cursor);
             NonCasePreservingHash = SpanHelper.ReadLittleUShort(buffer, ref cursor);
             CasePreservingHash = SpanHelper.ReadLittleUShort(buffer, ref cursor);
@@ -26,5 +29,9 @@ namespace UObject.Asset
             SpanHelper.WriteLittleUShort(ref buffer, NonCasePreservingHash, ref cursor);
             SpanHelper.WriteLittleUShort(ref buffer, CasePreservingHash, ref cursor);
         }
+
+        public override string ToString() => Name ?? base.ToString();
+
+        public override int GetHashCode() => CasePreservingHash;
     }
 }

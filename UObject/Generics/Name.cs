@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.Json.Serialization;
 using DragonLib.IO;
@@ -19,6 +20,7 @@ namespace UObject.Generics
 
         public void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
+            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(Name)} at {cursor:X}");
             Index = SpanHelper.ReadLittleInt(buffer, ref cursor);
             InstanceNum = SpanHelper.ReadLittleInt(buffer, ref cursor);
             if (asset.Names.Length < Index || Index < 0) return;

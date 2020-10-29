@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json.Serialization;
+using System.Threading;
+
 using DragonLib.IO;
 using JetBrains.Annotations;
 using UObject.Asset;
@@ -23,6 +26,7 @@ namespace UObject.Properties
         public override void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor, SerializationMode mode)
         {
             base.Deserialize(buffer, asset, ref cursor, mode);
+            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(BoolProperty)} at {cursor:X}");
             Value = SpanHelper.ReadByte(buffer, ref cursor) == 1;
             if (mode == SerializationMode.Normal) Guid.Deserialize(buffer, asset, ref cursor);
         }

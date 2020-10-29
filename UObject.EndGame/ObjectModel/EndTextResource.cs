@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using DragonLib.IO;
 using JetBrains.Annotations;
@@ -19,6 +20,7 @@ namespace UObject.EndGame.ObjectModel
 
         public void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
+            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(EndTextResource)} at {cursor:X}");
             ExportData.Deserialize(buffer, asset, ref cursor);
             Reserved = SpanHelper.ReadLittleInt(buffer, ref cursor);
             var count = SpanHelper.ReadLittleInt(buffer, ref cursor);

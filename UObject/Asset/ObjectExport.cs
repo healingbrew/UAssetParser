@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
+
 using DragonLib.IO;
 using JetBrains.Annotations;
 using UObject.Enum;
 using UObject.Generics;
+using UObject.Properties;
 
 namespace UObject.Asset
 {
@@ -33,6 +36,7 @@ namespace UObject.Asset
 
         public void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
+            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(ObjectExport)} at {cursor:X}");
             ClassIndex.Deserialize(buffer, asset, ref cursor);
             SuperIndex.Deserialize(buffer, asset, ref cursor);
             TemplateIndex.Deserialize(buffer, asset, ref cursor);
