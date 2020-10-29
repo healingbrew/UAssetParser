@@ -17,7 +17,7 @@ namespace UObject.JSON
             writer.WriteStartObject();
             foreach (var (key, value) in dict)
             {
-                writer.WritePropertyName(key.Value);
+                writer.WritePropertyName(key.Value ?? "None");
                 JsonSerializer.Serialize(writer, value, value?.GetType(), options);
             }
 

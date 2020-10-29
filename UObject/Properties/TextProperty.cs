@@ -21,6 +21,7 @@ namespace UObject.Properties
         public string? Hashkey { get; set; }
         public string? StringValue { get; set; }
         public Reference StringTable { get; set; } = new Reference();
+        public int Unknown { get; set; }
         public object? Value
         {
             get
@@ -48,6 +49,7 @@ namespace UObject.Properties
         {
             base.Deserialize(buffer, asset, ref cursor, mode);
             Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(TextProperty)} at {cursor:X}");
+            var estimatedEnd = cursor + (Tag?.Size ?? 0);
             LocalizeFlag = SpanHelper.ReadLittleInt(buffer, ref cursor);
             KeyPresent = SpanHelper.ReadByte(buffer, ref cursor);
             // TODO: 4.18 serialized uasset with TextProperty in array/struct
@@ -56,15 +58,26 @@ namespace UObject.Properties
                 Namespace = ObjectSerializer.DeserializeString(buffer, ref cursor);
                 Hashkey = ObjectSerializer.DeserializeString(buffer, ref cursor);
                 
-                if (LocalizeFlag > 8) // ?
+                if (LocalizeFlag != 0 && (LocalizeFlag ^ 8) > 0 && (LocalizeFlag ^ 2) > 0) // ?
                 {
                     ValueGuid.Deserialize(buffer, asset, ref cursor);
                 }
+                
                 StringValue = ObjectSerializer.DeserializeString(buffer, ref cursor);
             }
             else if(KeyPresent < 0xFF)
             {
                 StringTable.Deserialize(buffer, asset, ref cursor);
+            }
+            
+            if (KeyPresent == 0xFF && (estimatedEnd > cursor || (mode != SerializationMode.Normal && asset.Summary.FileVersionUE4 >= 515)))
+            {
+                Unknown = SpanHelper.ReadLittleInt(buffer, ref cursor);
+                
+                if ((LocalizeFlag & 2) == 2)
+                {
+                    StringValue = ObjectSerializer.DeserializeString(buffer, ref cursor);
+                }
             }
         }
 

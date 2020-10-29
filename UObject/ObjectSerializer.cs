@@ -61,6 +61,7 @@ namespace UObject
                 { nameof(UInt64Property), typeof(UInt64Property) },
                 { nameof(FloatProperty), typeof(FloatProperty) },
                 { nameof(BoolProperty), typeof(BoolProperty) },
+                { nameof(FieldPathProperty), typeof(FieldPathProperty) },
             };
             StructTypes = new Dictionary<string, Type>
             {

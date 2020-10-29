@@ -5,7 +5,6 @@ using DragonLib.IO;
 using JetBrains.Annotations;
 using UObject.Enum;
 using UObject.Generics;
-using UObject.Properties;
 
 namespace UObject.Asset
 {
@@ -43,8 +42,8 @@ namespace UObject.Asset
             OuterIndex.Deserialize(buffer, asset, ref cursor);
             ObjectName.Deserialize(buffer, asset, ref cursor);
             ObjectFlags = (ObjectFlags) SpanHelper.ReadLittleUInt(buffer, ref cursor);
-            SerialSize = SpanHelper.ReadLittleLong(buffer, ref cursor);
-            SerialOffset = SpanHelper.ReadLittleLong(buffer, ref cursor);
+            SerialSize = asset.Summary.FileVersionUE4 >= 511 ? SpanHelper.ReadLittleLong(buffer, ref cursor) : SpanHelper.ReadLittleInt(buffer, ref cursor);
+            SerialOffset = asset.Summary.FileVersionUE4 >= 511 ? SpanHelper.ReadLittleLong(buffer, ref cursor) : SpanHelper.ReadLittleInt(buffer, ref cursor);
             ForcedExport = SpanHelper.ReadLittleInt(buffer, ref cursor) == 1;
             NotForClient = SpanHelper.ReadLittleInt(buffer, ref cursor) == 1;
             NotForServer = SpanHelper.ReadLittleInt(buffer, ref cursor) == 1;

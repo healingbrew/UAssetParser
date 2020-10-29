@@ -19,8 +19,8 @@ namespace UObject2JSON
         [CLIFlag("workaround", Default = UnrealGame.None, Aliases = new[] { "w" }, Category = "Program Arguments", Help = "Game-specific workaround")]
         public UnrealGame Workaround { get; set; }
 
-        [CLIFlag("changeset", Default = AssetFileOptions.LATEST_UNREAL_VERSION, Aliases = new[] { "c" }, Category = "Program Arguments", Help = "Unreal changeset to parse with if unspecified by the asset")]
-        public int UnrealVersion { get; set; }
+        [CLIFlag("changeset", Aliases = new[] { "c" }, Category = "Program Arguments", Help = "Unreal changeset to parse with if unspecified by the asset, can specify multiple")]
+        public List<int>? UnrealVersions { get; set; }
 
         [CLIFlag("typeless", Default = false, Aliases = new[] { "t" }, Category = "Program Arguments", Help = "Do not store type information")]
         public bool Typeless { get; set; }

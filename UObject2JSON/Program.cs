@@ -5,10 +5,13 @@ using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+
 using DragonLib.CLI;
 using DragonLib.IO;
 using DragonLib.JSON;
+
 using JetBrains.Annotations;
+
 using UObject;
 using UObject.Asset;
 using UObject.JSON;
@@ -18,12 +21,13 @@ namespace UObject2JSON
     [PublicAPI]
     internal class Program
     {
+        [Flags]
         public enum ErrorCodes
         {
-            Success = 0,
-            Crash = 1,
-            FlagError = -1,
-            NotSupported = 2
+            Success      = 0,
+            Crash        = 1 << 0,
+            FlagError    = 1 << 1,
+            NotSupported = 1 << 2,
         }
 
         private static int Main(string[] args)
@@ -31,7 +35,9 @@ namespace UObject2JSON
             Logger.PrintVersion("UAsset");
             var flags = CommandLineFlags.ParseFlags<ProgramFlags>(CommandLineFlags.PrintHelp, args);
             if (flags == null) return (int) ErrorCodes.FlagError;
+
             var paths = new List<string>();
+
             // TODO: Move to DragonLib
             foreach (var path in flags.Paths)
             {
@@ -41,9 +47,11 @@ namespace UObject2JSON
             }
 
             var executingDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) ?? "./";
+
             foreach (var asmName in flags.GameModels ?? new List<string>())
             {
                 if (!flags.Quiet) Logger.Info("UAsset", $"Loading plugin {asmName}");
+
                 if (File.Exists(asmName))
                     ObjectSerializer.LoadGameModel(Path.Combine(executingDir, asmName));
                 else if (File.Exists(Path.Combine(executingDir, asmName)))
@@ -60,7 +68,7 @@ namespace UObject2JSON
 
             var settings = new JsonSerializerOptions
             {
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                Encoder       = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                 WriteIndented = true,
                 Converters =
                 {
@@ -73,47 +81,74 @@ namespace UObject2JSON
                 }
             };
 
-            var options = new AssetFileOptions
+            if (flags.UnrealVersions == null || flags.UnrealVersions.Count == 0)
             {
-                UnrealVersion = flags.UnrealVersion,
-                Workaround = flags.Workaround,
-                Dry = flags.Dry,
-                StripNames = flags.StripNames,
-            };
+                flags.UnrealVersions = new List<int>
+                {
+                    AssetFileOptions.LATEST_SUPPORTED_UNREAL_VERSION,
+                    513,
+                    AssetFileOptions.MINIMUM_SUPPORTED_UNREAL_VERSION,
+                };
+            }
+
+
+            var ecode = ErrorCodes.Success;
 
             foreach (var path in paths)
             {
-                var arg = Path.Combine(Path.GetDirectoryName(path) ?? ".", Path.GetFileNameWithoutExtension(path));
-                var uasset = File.ReadAllBytes(arg + ".uasset");
-                var uexp = File.Exists(arg + ".uexp") ? File.ReadAllBytes(arg + ".uexp") : Span<byte>.Empty;
+                var success = false;
+                var arg     = Path.Combine(Path.GetDirectoryName(path) ?? ".", Path.GetFileNameWithoutExtension(path));
+                var uasset  = File.ReadAllBytes(arg + ".uasset");
+                var uexp    = File.Exists(arg + ".uexp") ? File.ReadAllBytes(arg + ".uexp") : Span<byte>.Empty;
                 if (!flags.Quiet) Logger.Info("UAsset", $"Parsing {arg}...");
-                try
+                
+                foreach (var unrealVersion in flags.UnrealVersions)
                 {
-                    var asset = ObjectSerializer.Deserialize(uasset, uexp, options);
-                    if (flags.Dry)
+                    var options = new AssetFileOptions
                     {
-                        if (!asset.IsSupported) return (int) ErrorCodes.NotSupported;
-                        continue;
-                    }
+                        UnrealVersion = unrealVersion,
+                        Workaround    = flags.Workaround,
+                        Dry           = flags.Dry,
+                        StripNames    = flags.StripNames,
+                    };
 
-                    var json = JsonSerializer.Serialize(asset.ExportObjects, settings);
+                    if (!flags.Quiet) Logger.Info("UAsset", $"Trying version {unrealVersion}...");
 
-                    if (!string.IsNullOrWhiteSpace(flags.OutputFolder))
+                    try
                     {
-                        arg = Path.Combine(flags.OutputFolder, Path.GetFileName(arg));
-                        if (!Directory.Exists(flags.OutputFolder)) Directory.CreateDirectory(flags.OutputFolder);
-                    }
+                        var asset = ObjectSerializer.Deserialize(uasset, uexp, options);
+                        success = true;
+                        if (flags.Dry)
+                        {
+                            if (!asset.IsSupported) ecode |= ErrorCodes.NotSupported;
 
-                    File.WriteAllText(arg + ".json", json);
+                            continue;
+                        }
+
+                        var json = JsonSerializer.Serialize(asset.ExportObjects, settings);
+
+                        if (!string.IsNullOrWhiteSpace(flags.OutputFolder))
+                        {
+                            arg = Path.Combine(flags.OutputFolder, Path.GetFileName(arg));
+                            if (!Directory.Exists(flags.OutputFolder)) Directory.CreateDirectory(flags.OutputFolder);
+                        }
+
+                        File.WriteAllText(arg + ".json", json);
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Fatal("UAsset", e);
+                    }
                 }
-                catch (Exception e)
+
+                if (!success)
                 {
-                    Logger.Fatal("UAsset", e);
-                    return (int) ErrorCodes.Crash;
+                    ecode |= ErrorCodes.Crash;
                 }
             }
 
-            return (int) ErrorCodes.Success;
+            return (int) ecode;
         }
     }
 }

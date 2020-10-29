@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DragonLib.IO;
 using JetBrains.Annotations;
+
 using UObject.Generics;
 
 namespace UObject.Asset
@@ -12,12 +14,11 @@ namespace UObject.Asset
     {
         public AssetFile(Span<byte> uasset, Span<byte> uexp, AssetFileOptions options)
         {
-            Options = options;
-
-            var cursor = 0;
+            Options = options.Clone();
+            var cursor  = 0;
+            var maxSize = Math.Max(uasset.Length, uexp.Length);
             Summary = new PackageFileSummary();
-            Summary.Deserialize(uasset, this, options, ref cursor);
-
+            Summary.Deserialize(uasset, this, ref cursor);
             cursor = Summary.NameOffset;
             Names = ObjectSerializer.DeserializeProperties<NameEntry>(uasset, this, Summary.NameCount, ref cursor);
             cursor = Summary.ImportOffset;
@@ -26,9 +27,9 @@ namespace UObject.Asset
             cursor = Summary.ExportOffset;
             Exports = ObjectSerializer.AllocateProperties<ObjectExport>(Summary.ExportCount);
             ObjectSerializer.DeserializeProperties(uasset, this, Exports, ref cursor);
+            if(Exports.Any(x => x.SerialOffset < Summary.TotalHeaderSize || x.SerialSize >= maxSize)) throw new InvalidDataException();
             cursor = Summary.PreloadDependencyOffset;
             PreloadDependencies = SpanHelper.ReadStructArray<PreloadDependencyIndex>(uasset, Summary.PreloadDependencyCount, ref cursor);
-
             foreach (var export in Exports) ExportObjects[export.ObjectName] = ObjectSerializer.DeserializeObject(this, export, uasset, uexp);
         }
 
