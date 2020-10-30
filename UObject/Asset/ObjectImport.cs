@@ -16,7 +16,6 @@ namespace UObject.Asset
 
         public void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
-            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(ObjectImport)} at {cursor:X}");
             ClassPackage.Deserialize(buffer, asset, ref cursor);
             ClassName.Deserialize(buffer, asset, ref cursor);
             PackageRef.Deserialize(buffer, asset, ref cursor);

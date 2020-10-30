@@ -30,7 +30,18 @@ namespace UObject.Asset
             if(Exports.Any(x => x.SerialOffset < Summary.TotalHeaderSize || x.SerialSize >= maxSize)) throw new InvalidDataException();
             cursor = Summary.PreloadDependencyOffset;
             PreloadDependencies = SpanHelper.ReadStructArray<PreloadDependencyIndex>(uasset, Summary.PreloadDependencyCount, ref cursor);
-            foreach (var export in Exports) ExportObjects[export.ObjectName] = ObjectSerializer.DeserializeObject(this, export, uasset, uexp);
+
+            foreach (var export in Exports)
+            {
+                try
+                {
+                    ExportObjects[export.ObjectName] = ObjectSerializer.DeserializeObject(this, export, uasset, uexp);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(export.ClassIndex.Name ?? "None", e);
+                }
+            }
         }
 
         public AssetFile() { }

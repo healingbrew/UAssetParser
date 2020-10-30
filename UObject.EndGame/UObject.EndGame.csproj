@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <LangVersion>8.0</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <Description>EndGameModel</Description>
+        <Description>UObject.EndGame.EndGameModel</Description>
         <Title>EndGame</Title>
     </PropertyGroup>
 

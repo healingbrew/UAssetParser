@@ -72,7 +72,7 @@ namespace UObject2JSON
                 WriteIndented = true,
                 Converters =
                 {
-                    flags.Typeless ? (JsonConverter) new GenericTypelessDictionaryConverterFactory() : new GenericDictionaryConverterFactory(),
+                    flags.Typeless ? (JsonConverter) new GenericTypelessDictionaryConverterFactory(flags.EnforceDictionaryKeys, typeof(IValueType<string>)) : new GenericDictionaryConverterFactory(),
                     flags.Typeless ? (JsonConverter) new GenericTypelessListConverterFactory() : new GenericListConverterFactory(),
                     new ValueTypeConverterFactory(flags.Typeless),
                     new NameDictionaryConverterFactory(),
@@ -112,7 +112,7 @@ namespace UObject2JSON
                         StripNames    = flags.StripNames,
                     };
 
-                    if (!flags.Quiet) Logger.Info("UAsset", $"Trying version {unrealVersion}...");
+                    if (!flags.Quiet && flags.UnrealVersions.Count > 1) Logger.Info("UAsset", $"Trying version {unrealVersion}...");
 
                     try
                     {

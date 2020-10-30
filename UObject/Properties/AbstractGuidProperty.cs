@@ -18,7 +18,6 @@ namespace UObject.Properties
 
         public override void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
-            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(AbstractGuidProperty)} at {cursor:X}");
             Tag = new PropertyGuidTag();
             Tag.Deserialize(buffer, asset, ref cursor);
         }

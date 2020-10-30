@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\UObject.EndGame\UObject.EndGame.csproj" />
+      <ProjectReference Include="..\UObject.SpaceFish\UObject.SpaceFish.csproj" />
       <ProjectReference Include="..\UObject\UObject.csproj" />
     </ItemGroup>
 

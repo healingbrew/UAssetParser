@@ -6,23 +6,18 @@ using DragonLib.IO;
 using JetBrains.Annotations;
 using UObject.Asset;
 using UObject.EndGame.Properties;
-using UObject.Generics;
 using UObject.ObjectModel;
 
 namespace UObject.EndGame.ObjectModel
 {
     [PublicAPI]
-    public class EndTextResource : ISerializableObject
+    public class EndTextResource : AbstractExportObject
     {
-        public int Reserved { get; set; }
         public Dictionary<string, EndTextProperty> Data { get; set; } = new Dictionary<string, EndTextProperty>();
-        public UnrealObject ExportData { get; set; } = new UnrealObject();
 
-        public void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
+        public override void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
-            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(EndTextResource)} at {cursor:X}");
-            ExportData.Deserialize(buffer, asset, ref cursor);
-            Reserved = SpanHelper.ReadLittleInt(buffer, ref cursor);
+            base.Deserialize(buffer, asset, ref cursor);
             var count = SpanHelper.ReadLittleInt(buffer, ref cursor);
             for (var i = 0; i < count; ++i)
             {
@@ -35,6 +30,6 @@ namespace UObject.EndGame.ObjectModel
             }
         }
 
-        public void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor) => throw new NotImplementedException();
+        public override void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor) => throw new NotImplementedException();
     }
 }

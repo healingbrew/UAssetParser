@@ -15,7 +15,7 @@ namespace UObject.Properties
     [PublicAPI]
     public class StructProperty : AbstractProperty, IArrayValueType<object?>
     {
-        public Name StructName { get; set; } = new Name();
+        public Name StructType { get; set; } = new Name();
         public Guid StructGuid { get; set; } = System.Guid.Empty;
 
         [JsonIgnore]
@@ -26,21 +26,21 @@ namespace UObject.Properties
         public override void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor, SerializationMode mode)
         {
             base.Deserialize(buffer, asset, ref cursor, mode);
-            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(StructProperty)} at {cursor:X}");
-            StructName.Deserialize(buffer, asset, ref cursor);
+            StructType.Deserialize(buffer, asset, ref cursor);
+            Debug.WriteLineIf(Debugger.IsAttached, $"Struct name is {StructType}");
             if (mode == SerializationMode.Normal || mode == SerializationMode.Array)
             {
                 StructGuid = SpanHelper.ReadStruct<Guid>(buffer, ref cursor);
                 Guid.Deserialize(buffer, asset, ref cursor);
             }
 
-            if (mode == SerializationMode.Normal) Value = ObjectSerializer.DeserializeStruct(buffer, asset, StructName, ref cursor);
+            if (mode == SerializationMode.Normal) Value = ObjectSerializer.DeserializeStruct(buffer, asset, StructType, ref cursor);
         }
 
         public override void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor, SerializationMode mode)
         {
             base.Serialize(ref buffer, asset, ref cursor, mode);
-            StructName.Serialize(ref buffer, asset, ref cursor);
+            StructType.Serialize(ref buffer, asset, ref cursor);
             if (mode == SerializationMode.Normal || mode == SerializationMode.Array)
             {
                 SpanHelper.WriteStruct(ref buffer, StructGuid, ref cursor);
@@ -63,5 +63,7 @@ namespace UObject.Properties
                     }
             }
         }
+
+        public override string ToString() => $"{nameof(StructProperty)}{{{StructType}}}";
     }
 }

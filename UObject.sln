@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UObject2JSON", "UObject2JSO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UObject.EndGame", "UObject.EndGame\UObject.EndGame.csproj", "{9C005A40-A872-4EFE-BCC8-80950915878D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Game Specific", "Game Specific", "{8FA891C2-A074-425F-8C68-5773E4FB3087}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,8 @@ Global
 		{9C005A40-A872-4EFE-BCC8-80950915878D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C005A40-A872-4EFE-BCC8-80950915878D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C005A40-A872-4EFE-BCC8-80950915878D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9C005A40-A872-4EFE-BCC8-80950915878D} = {8FA891C2-A074-425F-8C68-5773E4FB3087}
 	EndGlobalSection
 EndGlobal

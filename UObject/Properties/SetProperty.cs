@@ -15,7 +15,7 @@ namespace UObject.Properties
     [PublicAPI]
     public class SetProperty : AbstractProperty, IArrayValueType<object?>
     {
-        public Name ArrayType { get; set; } = new Name();
+        public Name SetType { get; set; } = new Name();
 
         [JsonIgnore]
         public PropertyGuid Guid { get; set; } = new PropertyGuid();
@@ -28,8 +28,8 @@ namespace UObject.Properties
         {
             Logger.Assert(mode == SerializationMode.Normal, "mode == SerializationMode.Normal");
             base.Deserialize(buffer, asset, ref cursor, mode);
-            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(SetProperty)} at {cursor:X}");
-            ArrayType.Deserialize(buffer, asset, ref cursor);
+            SetType.Deserialize(buffer, asset, ref cursor);
+            Debug.WriteLine($"SetProperty type is {SetType}");
             Guid.Deserialize(buffer, asset, ref cursor);
 #if DEBUG
             var start = cursor;
@@ -41,7 +41,7 @@ namespace UObject.Properties
 
             if (count > 0)
             {
-                if (ArrayType == "StructProperty")
+                if (SetType == "StructProperty")
                 {
                     // TODO: Struct types are not serialized!
                     for (var i = 0; i < count; ++i) value.Add(ObjectSerializer.DeserializeStruct(buffer, asset, "None", ref cursor));
@@ -49,14 +49,14 @@ namespace UObject.Properties
                 else
                 {
                     var arrayMode                                                                                            = SerializationMode.Array;
-                    if (ArrayType == "ByteProperty" && Tag?.Size > 0 && (Tag?.Size - 8) / count == 1) arrayMode |= SerializationMode.PureByteArray;
-                    for (var i = 0; i < count; ++i) value.Add(ObjectSerializer.DeserializeProperty(buffer, asset, Tag ?? new PropertyTag(), ArrayType, cursor, ref cursor, arrayMode));
+                    if (SetType == "ByteProperty" && Tag?.Size > 0 && (Tag?.Size - 8) / count == 1) arrayMode |= SerializationMode.PureByteArray;
+                    for (var i = 0; i < count; ++i) value.Add(ObjectSerializer.DeserializeProperty(buffer, asset, Tag ?? new PropertyTag(), SetType, cursor, ref cursor, arrayMode));
                 }
             }
             
             Value = value;
 #if DEBUG
-            if (ArrayType != "StructProperty" && cursor != start + Tag?.Size)
+            if (SetType != "StructProperty" && cursor != start + Tag?.Size)
                 throw new InvalidOperationException("ARRAY SIZE OFFSHOOT");
 #endif
         }
@@ -65,7 +65,7 @@ namespace UObject.Properties
         {
             Logger.Assert(mode == SerializationMode.Normal, "mode == SerializationMode.Normal");
             base.Serialize(ref buffer, asset, ref cursor, mode);
-            ArrayType.Serialize(ref buffer, asset, ref cursor);
+            SetType.Serialize(ref buffer, asset, ref cursor);
             Guid.Serialize(ref buffer, asset, ref cursor);
             switch (Value)
             {
@@ -83,5 +83,7 @@ namespace UObject.Properties
 
             // TODO case for generic UObject intead of struct or array?
         }
+        
+        public override string ToString() => $"{nameof(SetProperty)}[{SetType}]";
     }
 }

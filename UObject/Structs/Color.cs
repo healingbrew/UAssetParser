@@ -1,8 +1,11 @@
-﻿using JetBrains.Annotations;
+﻿using System.Runtime.InteropServices;
+
+using JetBrains.Annotations;
 
 namespace UObject.Structs
 {
     [PublicAPI]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Color
     {
         public byte R { get; set; }

@@ -23,7 +23,6 @@ namespace UObject.Properties
         public override void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor, SerializationMode mode)
         {
             base.Deserialize(buffer, asset, ref cursor, mode);
-            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(ByteProperty)} at {cursor:X}");
             if (mode == SerializationMode.Normal)
             {
                 EnumName.Deserialize(buffer, asset, ref cursor);

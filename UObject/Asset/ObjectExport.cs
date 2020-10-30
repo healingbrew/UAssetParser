@@ -31,11 +31,9 @@ namespace UObject.Asset
         public bool CreateBeforeSerializationDependencies { get; set; }
         public bool SerializationBeforeCreateDependencies { get; set; }
         public bool CreateBeforeCreateDependencies { get; set; }
-        public DynamicType DynamicType { get; set; }
 
         public void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
-            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(ObjectExport)} at {cursor:X}");
             ClassIndex.Deserialize(buffer, asset, ref cursor);
             SuperIndex.Deserialize(buffer, asset, ref cursor);
             TemplateIndex.Deserialize(buffer, asset, ref cursor);
@@ -56,7 +54,6 @@ namespace UObject.Asset
             CreateBeforeSerializationDependencies = SpanHelper.ReadLittleInt(buffer, ref cursor) == 1;
             SerializationBeforeCreateDependencies = SpanHelper.ReadLittleInt(buffer, ref cursor) == 1;
             CreateBeforeCreateDependencies = SpanHelper.ReadLittleInt(buffer, ref cursor) == 1;
-            DynamicType = (DynamicType) SpanHelper.ReadLittleUInt(buffer, ref cursor);
         }
 
         public void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor)
@@ -81,7 +78,6 @@ namespace UObject.Asset
             SpanHelper.WriteLittleInt(ref buffer, CreateBeforeSerializationDependencies ? 1 : 0, ref cursor);
             SpanHelper.WriteLittleInt(ref buffer, SerializationBeforeCreateDependencies ? 1 : 0, ref cursor);
             SpanHelper.WriteLittleInt(ref buffer, CreateBeforeCreateDependencies ? 1 : 0, ref cursor);
-            SpanHelper.WriteLittleUInt(ref buffer, (uint) DynamicType, ref cursor);
         }
     }
 }

@@ -17,7 +17,6 @@ namespace UObject.Generics
 
         public virtual void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
-            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(PropertyTag)} at {cursor:X}");
             Name.Deserialize(buffer, asset, ref cursor);
             Type.Deserialize(buffer, asset, ref cursor);
             Size = SpanHelper.ReadLittleInt(buffer, ref cursor);

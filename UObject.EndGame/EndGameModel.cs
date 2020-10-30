@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+
 using UObject.EndGame.ObjectModel;
 
 namespace UObject.EndGame

@@ -14,7 +14,6 @@ namespace UObject.Generics
         public override void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
             base.Deserialize(buffer, asset, ref cursor);
-            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(PropertyGuidTag)} at {cursor:X}");
             Guid.Deserialize(buffer, asset, ref cursor);
         }
 

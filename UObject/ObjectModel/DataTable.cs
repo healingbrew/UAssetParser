@@ -10,17 +10,13 @@ using UObject.Generics;
 namespace UObject.ObjectModel
 {
     [PublicAPI]
-    public class DataTable : ISerializableObject
+    public class DataTable : AbstractExportObject
     {
         public Dictionary<Name, UnrealObject> Data { get; set; } = new Dictionary<Name, UnrealObject>();
-        public int Reserved { get; set; }
-        public UnrealObject ExportData { get; set; } = new UnrealObject();
 
-        public void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
+        public override void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
-            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(DataTable)} at {cursor:X}");
-            ExportData.Deserialize(buffer, asset, ref cursor);
-            Reserved = SpanHelper.ReadLittleInt(buffer, ref cursor);
+            base.Deserialize(buffer, asset, ref cursor);
             var count = SpanHelper.ReadLittleInt(buffer, ref cursor);
             for (var i = 0; i < count; ++i)
             {
@@ -32,10 +28,9 @@ namespace UObject.ObjectModel
             }
         }
 
-        public void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor)
+        public override void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor)
         {
-            ExportData.Serialize(ref buffer, asset, ref cursor);
-            SpanHelper.WriteLittleInt(ref buffer, Reserved, ref cursor);
+            base.Serialize(ref buffer, asset, ref cursor);
             SpanHelper.WriteLittleInt(ref buffer, Data.Count, ref cursor);
             foreach (var (key, value) in Data)
             {

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 using System.Text;
 using DragonLib.IO;
 using JetBrains.Annotations;
@@ -27,11 +29,10 @@ namespace UObject
 
         public static Dictionary<string, Type> ClassTypes { get; private set; } = null!;
 
-        public static Dictionary<string, (GameModelLoadContext, GameModel)> GameModels { get; private set; } = new Dictionary<string, (GameModelLoadContext, GameModel)>();
+        public static Dictionary<string, GameModel> GameModels { get; private set; } = new Dictionary<string, GameModel>();
 
         public static void Reset()
         {
-            foreach (var (_, (context, _)) in GameModels) context.Unload();
             GameModels.Clear();
 
             PropertyTypes = new Dictionary<string, Type>
@@ -74,6 +75,8 @@ namespace UObject
                 { nameof(Vector), typeof(Vector) },
                 { nameof(Quat), typeof(Quat) },
                 { nameof(Vector2D), typeof(Vector2D) },
+                { nameof(RichCurveKey), typeof(RichCurveKey) },
+                { nameof(GameplayTagContainer), typeof(GameplayTagContainer) }
             };
             ClassTypes = new Dictionary<string, Type>
             {
@@ -180,12 +183,23 @@ namespace UObject
         {
             var blob = uexp.Length > 0 ? uexp : uasset;
 
-            if (!ClassTypes.TryGetValue(export.ClassIndex.Name ?? "None", out var classType)) throw new NotImplementedException(export.ClassIndex.Name);
+            if (export.ClassIndex.Name == null)
+                throw new InvalidDataException();
 
-            if (!(Activator.CreateInstance(classType) is ISerializableObject instance)) throw new NotImplementedException(export.ClassIndex.Name);
+            ;
+            
+            if (!ClassTypes.TryGetValue(export.ClassIndex.Name, out var classType) || !(Activator.CreateInstance(classType) is ISerializableObject instance))
+                instance = new ExportObjectShim();
 
             var cursor = (int) (uexp.Length > 0 ? export.SerialOffset - asset.Summary.TotalHeaderSize : export.SerialOffset);
             instance.Deserialize(blob, asset, ref cursor);
+
+            if (instance is ExportObjectShim shim)
+            {
+                shim.ExpectedClass = export.ClassIndex.Name;
+                shim.EndOffset     = cursor;
+            }
+            
             return instance;
         }
 
@@ -200,20 +214,30 @@ namespace UObject
                 return obj;
             }
 
+            if (typeof(ISerializableObject).IsAssignableFrom(structType))
+            {
+                var instance = (ISerializableObject) Activator.CreateInstance(structType)!;
+                instance.Deserialize(buffer, asset, ref cursor);
+                return instance;
+            }
+
             return SpanHelper.ReadStruct(buffer, structType, ref cursor);
         }
 
         public static void LoadGameModel(string path)
         {
-            var context = new GameModelLoadContext(path);
-            var asm = context.LoadFromAssemblyPath(path);
+            var context       = AssemblyLoadContext.Default;
+            var asm           = context.LoadFromAssemblyPath(path);
             var typeAttribute = asm.GetCustomAttribute<AssemblyDescriptionAttribute>();
             if (typeAttribute == null || string.IsNullOrEmpty(typeAttribute.Description)) return;
+
             var type = asm.GetType(typeAttribute.Description);
             if (type == null) return;
+
             var nameAttribute = asm.GetCustomAttribute<AssemblyTitleAttribute>();
-            if (!(Activator.CreateInstance(type) is GameModel instance)) return;
-            GameModels[nameAttribute?.Title ?? typeAttribute.Description] = (context, instance);
+            if (!(Activator.CreateInstance(type, ClassTypes, PropertyTypes, StructTypes) is GameModel instance)) return;
+
+            GameModels[nameAttribute?.Title ?? typeAttribute.Description] = instance;
         }
 
         public static bool IsSupported(ObjectExport export) => ClassTypes.ContainsKey(export.ClassIndex.Name ?? "None");

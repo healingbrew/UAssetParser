@@ -26,7 +26,6 @@ namespace UObject.Properties
         {
             Logger.Assert(mode == SerializationMode.Normal, "mode == SerializationMode.Normal");
             base.Deserialize(buffer, asset, ref cursor, mode);
-            Debug.WriteLineIf(Debugger.IsAttached, $"Deserialize called for {nameof(ArrayProperty)} at {cursor:X}");
             ArrayType.Deserialize(buffer, asset, ref cursor);
             Guid.Deserialize(buffer, asset, ref cursor);
 #if DEBUG
@@ -34,12 +33,13 @@ namespace UObject.Properties
 #endif
             var count = SpanHelper.ReadLittleInt(buffer, ref cursor);
             var value = new List<object?>();
+            Debug.WriteLine($"ArrayProperty type is {ArrayType}");
             if (ArrayType == "StructProperty")
             {
                 var structTag = new PropertyTag();
                 structTag.Deserialize(buffer, asset, ref cursor);
                 var structProperty = ObjectSerializer.DeserializeProperty(buffer, asset, structTag, ArrayType, cursor, ref cursor, SerializationMode.Array) as StructProperty ?? throw new InvalidDataException();
-                for (var i = 0; i < count; ++i) value.Add(ObjectSerializer.DeserializeStruct(buffer, asset, structProperty?.StructName! ?? "None", ref cursor));
+                for (var i = 0; i < count; ++i) value.Add(ObjectSerializer.DeserializeStruct(buffer, asset, structProperty?.StructType! ?? "None", ref cursor));
                 structProperty!.Value = value;
                 Value = structProperty;
             }
@@ -78,5 +78,7 @@ namespace UObject.Properties
 
             // TODO case for generic UObject intead of struct or array?
         }
+
+        public override string ToString() => $"{nameof(ArrayType)}[{ArrayType}]";
     }
 }
