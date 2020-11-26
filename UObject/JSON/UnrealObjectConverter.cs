@@ -14,7 +14,7 @@ namespace UObject.JSON
         public override UnrealObject Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) =>
             new UnrealObject
             {
-                Value = JsonSerializer.Deserialize<Dictionary<string, AbstractProperty>>(ref reader, options)
+                Value = JsonSerializer.Deserialize<Dictionary<string, AbstractProperty>>(ref reader, options)!
             };
 
         public override void Write(Utf8JsonWriter writer, UnrealObject value, JsonSerializerOptions options) => JsonSerializer.Serialize(writer, value.Value, options);

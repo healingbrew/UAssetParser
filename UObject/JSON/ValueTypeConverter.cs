@@ -11,7 +11,7 @@ namespace UObject.JSON
         public override IValueType<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (!(Activator.CreateInstance(typeToConvert) is IValueType<T> valueType)) throw new JsonException();
-            valueType.Value = (T) JsonSerializer.Deserialize(ref reader, typeof(T), options);
+            valueType.Value = (T) JsonSerializer.Deserialize(ref reader, typeof(T), options)!;
             return valueType;
         }
 

@@ -2,18 +2,22 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
-        <RuntimeIdentifiers>win10-x64;osx-x64;linux-x64</RuntimeIdentifiers>
+        <TargetFramework>net5.0</TargetFramework>
+        <RuntimeIdentifiers>win10;osx;linux</RuntimeIdentifiers>
         <NoWarn>1701;1702;NU1701</NoWarn>
         <Nullable>enable</Nullable>
-        <LangVersion>8.0</LangVersion>
+        <LangVersion>latest</LangVersion>
         <Version>1.0.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\UObject.EndGame\UObject.EndGame.csproj" />
-      <ProjectReference Include="..\UObject.SpaceFish\UObject.SpaceFish.csproj" />
       <ProjectReference Include="..\UObject\UObject.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Tomlyn" Version="0.1.2" />
+      <PackageReference Include="YamlDotNet.NetCore" Version="1.0.0" />
     </ItemGroup>
 
 </Project>

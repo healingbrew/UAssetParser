@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using DragonLib.CLI;
 using JetBrains.Annotations;
-using UObject.Asset;
 using UObject.Enum;
 
-namespace UObject2JSON
+namespace UObjectDeserializer
 {
     [PublicAPI]
     public class ProgramFlags : ICLIFlags
@@ -31,6 +30,9 @@ namespace UObject2JSON
         [CLIFlag("dry", Default = false, Aliases = new[] { "n" }, Category = "Program Arguments", Help = "Only parse asset information, not actual serial info")]
         public bool Dry { get; set; }
 
+        [CLIFlag("throw", Default = false, Category = "Program Arguments", Help = "Stop parsing an UAsset when it fails to parse an export object")]
+        public bool Throw { get; set; }
+
         [CLIFlag("quiet", Default = false, Aliases = new[] { "q" }, Category = "Program Arguments", Help = "Suppress output messages")]
         public bool Quiet { get; set; }
 
@@ -40,5 +42,8 @@ namespace UObject2JSON
         [UsedImplicitly]
         [CLIFlag("game", Aliases = new[] { "g" }, Category = "Program Arguments", Help = "Game DLL to load")]
         public List<string>? GameModels { get; set; }
+        
+        [CLIFlag("format", Default = SerializationFormat.JSON, Aliases = new[] { "f" }, Category = "Program Arguments", Help = "Format to deserialize to")]
+        public SerializationFormat Format { get; set; }
     }
 }

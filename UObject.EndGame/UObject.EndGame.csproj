@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
-        <RuntimeIdentifiers>win10-x64;osx-x64;linux-x64</RuntimeIdentifiers>
+        <TargetFramework>net5.0</TargetFramework>
+        <RuntimeIdentifiers>win10;osx;linux</RuntimeIdentifiers>
         <Nullable>enable</Nullable>
-        <LangVersion>8.0</LangVersion>
+        <LangVersion>latest</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Description>UObject.EndGame.EndGameModel</Description>
         <Title>EndGame</Title>
+        <Version>1.0.0</Version>
     </PropertyGroup>
 
     <ItemGroup>

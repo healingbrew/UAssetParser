@@ -13,7 +13,7 @@ namespace UObject.JSON
             reader.TokenType switch
             {
                 JsonTokenType.Null => "None",
-                JsonTokenType.String => reader.GetString(),
+                JsonTokenType.String => reader.GetString()!,
                 _ => throw new JsonException()
             };
 

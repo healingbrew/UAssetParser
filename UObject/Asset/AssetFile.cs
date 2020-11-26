@@ -39,7 +39,7 @@ namespace UObject.Asset
                 }
                 catch (Exception e)
                 {
-                    throw new Exception(export.ClassIndex.Name ?? "None", e);
+                    if(options.Throw) throw new Exception(export.ClassIndex.Name ?? "None", e);
                 }
             }
         }

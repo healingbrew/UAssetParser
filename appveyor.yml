@@ -1,7 +1,7 @@
 version: '1.0.{build}'
 dotnet_csproj:
   patch: true
-  file: '**\*.csproj'
+  file: 'UObject/UObject.csproj;UObjectDeserializer/UObjectDeserializer.csproj'
   version: '{version}'
   assembly_version: '{version}'
   file_version: '{version}'
@@ -15,19 +15,19 @@ before_build:
   - cmd: dotnet --version
   - cmd: dotnet restore UObject.sln --verbosity m
 build_script:
-  - cmd: dotnet publish --configuration Release --self-contained -r win10-x64 -o dist/UObjectStandalone
-  - cmd: dotnet publish --configuration Release /p:PublishTrimmed=false -o dist/UObjectRuntime
-  - cmd: dotnet publish --configuration Debug /p:PublishTrimmed=false -o dist/UObjectDebug
+  - cmd: dotnet publish --configuration Release --self-contained -r win10-x64 -o dist/Standalone
+  - cmd: dotnet publish --configuration Release /p:PublishTrimmed=false -o dist/UObject
+  - cmd: dotnet publish --configuration Debug /p:PublishTrimmed=false -o dist/Debug
 on_success:
-  - cmd: del dist\UObjectStandalone\*.json
-  - cmd: del dist\UObjectRuntime\*.json
-  - cmd: del dist\UObjectDebug\*.json
+  - cmd: del dist\Standalone\*.json
+  - cmd: del dist\UObject\*.json
+  - cmd: del dist\Debug\*.json
 clone_depth: 3
-deploy: off
+deploy: false
 artifacts:
-- path: dist/UObjectStandalone
-  name: UObjectStandalone_netcore31
-- path: dist/UObjectRuntime
-  name: UObjectRuntime_netcore31
-- path: dist/UObjectDebug
-  name: UObjectDebug_netcore31
+- path: dist/Standalone
+  name: UObjectStandalone
+- path: dist/UObject
+  name: UObject
+- path: dist/Debug
+  name: UObjectDebug

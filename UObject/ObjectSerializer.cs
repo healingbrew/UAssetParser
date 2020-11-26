@@ -76,7 +76,8 @@ namespace UObject
                 { nameof(Quat), typeof(Quat) },
                 { nameof(Vector2D), typeof(Vector2D) },
                 { nameof(RichCurveKey), typeof(RichCurveKey) },
-                { nameof(GameplayTagContainer), typeof(GameplayTagContainer) }
+                { nameof(GameplayTagContainer), typeof(GameplayTagContainer) },
+                { nameof(Guid), typeof(Guid) },
             };
             ClassTypes = new Dictionary<string, Type>
             {
