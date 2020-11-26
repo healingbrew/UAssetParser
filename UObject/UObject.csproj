@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
-        <RuntimeIdentifiers>win10;osx;linux</RuntimeIdentifiers>
+        <RuntimeIdentifiers>win10-x64;osx-x64;linux-x64</RuntimeIdentifiers>
         <NoWarn>1701;1702;NU1701</NoWarn>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>

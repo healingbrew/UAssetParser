@@ -1,7 +1,7 @@
 version: '1.0.{build}'
 dotnet_csproj:
   patch: true
-  file: 'UObject\*.csproj'
+  file: 'UObject\*.csproj;UObjectDeserializer\*.csproj'
   version: '{version}'
   assembly_version: '{version}'
   file_version: '{version}'
