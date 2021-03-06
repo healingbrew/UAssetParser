@@ -6,7 +6,7 @@ namespace UObjectDeserializer.Serialization
     {
         public string Serialize(object? obj)
         {
-            return HealingML.Print(obj, DragonMLSettings.Slim) ?? string.Empty;
+            return DragonML.Print(obj, DragonMLSettings.Slim) ?? string.Empty;
         }
 
         public string Extension { get; } = ".dragonml";

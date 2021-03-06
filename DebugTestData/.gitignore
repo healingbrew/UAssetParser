@@ -1,2 +1,5 @@
 *.csv
 *.json
+*.yaml
+*.xml
+*.dragonml

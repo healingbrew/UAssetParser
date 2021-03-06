@@ -15,6 +15,10 @@ namespace UObject.JSON
             return valueType;
         }
 
-        public override void Write(Utf8JsonWriter writer, IValueType<T> value, JsonSerializerOptions options) => JsonSerializer.Serialize(writer, value.Value, value.Value?.GetType() ?? typeof(void), options);
+        public override void Write(Utf8JsonWriter writer, IValueType<T> value, JsonSerializerOptions options)
+        {
+            if(value.Value == null) writer.WriteNullValue();
+            else JsonSerializer.Serialize(writer, value.Value, value.Value.GetType(), options);
+        }
     }
 }

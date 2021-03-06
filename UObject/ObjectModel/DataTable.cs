@@ -17,6 +17,7 @@ namespace UObject.ObjectModel
         public override void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
             base.Deserialize(buffer, asset, ref cursor);
+            asset.Stage = SerializationStage.Data;
             var count = SpanHelper.ReadLittleInt(buffer, ref cursor);
             for (var i = 0; i < count; ++i)
             {

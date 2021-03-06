@@ -12,23 +12,29 @@ namespace UObject.Asset
     [PublicAPI]
     public class AssetFile
     {
+        public SerializationStage Stage { get; set; }
         public AssetFile(Span<byte> uasset, Span<byte> uexp, AssetFileOptions options)
         {
             Options = options.Clone();
             var cursor  = 0;
             var maxSize = Math.Max(uasset.Length, uexp.Length);
+            Stage = SerializationStage.Summary;
             Summary = new PackageFileSummary();
             Summary.Deserialize(uasset, this, ref cursor);
             cursor = Summary.NameOffset;
+            Stage = SerializationStage.Names;
             Names = ObjectSerializer.DeserializeProperties<NameEntry>(uasset, this, Summary.NameCount, ref cursor);
             cursor = Summary.ImportOffset;
+            Stage = SerializationStage.Imports;
             Imports = ObjectSerializer.AllocateProperties<ObjectImport>(Summary.ImportCount);
             ObjectSerializer.DeserializeProperties(uasset, this, Imports, ref cursor);
             cursor = Summary.ExportOffset;
+            Stage = SerializationStage.Exports;
             Exports = ObjectSerializer.AllocateProperties<ObjectExport>(Summary.ExportCount);
             ObjectSerializer.DeserializeProperties(uasset, this, Exports, ref cursor);
             if(Exports.Any(x => x.SerialOffset < Summary.TotalHeaderSize || x.SerialSize >= maxSize)) throw new InvalidDataException();
             cursor = Summary.PreloadDependencyOffset;
+            Stage = SerializationStage.Preload;
             PreloadDependencies = SpanHelper.ReadStructArray<PreloadDependencyIndex>(uasset, Summary.PreloadDependencyCount, ref cursor);
 
             foreach (var export in Exports)

@@ -187,20 +187,17 @@ namespace UObject
             if (export.ClassIndex.Name == null)
                 throw new InvalidDataException();
 
-            ;
-            
             if (!ClassTypes.TryGetValue(export.ClassIndex.Name, out var classType) || !(Activator.CreateInstance(classType) is ISerializableObject instance))
                 instance = new ExportObjectShim();
 
             var cursor = (int) (uexp.Length > 0 ? export.SerialOffset - asset.Summary.TotalHeaderSize : export.SerialOffset);
             instance.Deserialize(blob, asset, ref cursor);
 
-            if (instance is ExportObjectShim shim)
-            {
-                shim.ExpectedClass = export.ClassIndex.Name;
-                shim.EndOffset     = cursor;
-            }
+            if (instance is not ExportObjectShim shim) return instance;
             
+            shim.ExpectedClass = export.ClassIndex.Name;
+            shim.EndOffset     = cursor;
+
             return instance;
         }
 

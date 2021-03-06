@@ -15,11 +15,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <None Remove="Properties\launchSettings.json" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="DragonLib" Version="1.1.1" />
+      <PackageReference Include="DragonLib" Version="1.1.4.1" />
     </ItemGroup>
     
 </Project>

@@ -17,7 +17,7 @@ namespace UObject.Asset
         public int TotalHeaderSize { get; set; }
         public string? FolderName { get; set; }
         public string? LocalizationId { get; set; }
-        public uint PackageFlags { get; set; }
+        public PackageFlags PackageFlags { get; set; }
         public int NameCount { get; set; }
         public int NameOffset { get; set; }
         public int GatherableNameCount { get; set; }
@@ -64,7 +64,7 @@ namespace UObject.Asset
             CustomVersion = SpanHelper.ReadStructArray<int>(buffer, customVersionCount, ref cursor);
             TotalHeaderSize = SpanHelper.ReadLittleInt(buffer, ref cursor);
             FolderName = ObjectSerializer.DeserializeString(buffer, ref cursor);
-            PackageFlags = SpanHelper.ReadLittleUInt(buffer, ref cursor);
+            PackageFlags = (PackageFlags) SpanHelper.ReadLittleUInt(buffer, ref cursor);
             NameCount = SpanHelper.ReadLittleInt(buffer, ref cursor);
             NameOffset = SpanHelper.ReadLittleInt(buffer, ref cursor);
             if (FileVersionUE4 >= 516)
@@ -117,7 +117,7 @@ namespace UObject.Asset
             SpanHelper.WriteStructArray(ref buffer, CustomVersion, ref cursor);
             SpanHelper.WriteLittleInt(ref buffer, TotalHeaderSize, ref cursor);
             ObjectSerializer.SerializeString(ref buffer, FolderName ?? "None", ref cursor);
-            SpanHelper.WriteLittleUInt(ref buffer, PackageFlags, ref cursor);
+            SpanHelper.WriteLittleUInt(ref buffer, (uint) PackageFlags, ref cursor);
             SpanHelper.WriteLittleInt(ref buffer, NameCount, ref cursor);
             SpanHelper.WriteLittleInt(ref buffer, NameOffset, ref cursor);
             if (FileVersionUE4 >= 516)
