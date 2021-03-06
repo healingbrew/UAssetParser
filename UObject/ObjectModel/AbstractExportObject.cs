@@ -16,19 +16,12 @@ namespace UObject.ObjectModel
         public virtual void Deserialize(Span<byte> buffer, AssetFile asset, ref int cursor)
         {
             asset.Stage = SerializationStage.Instance;
-            #if DEBUG && UNVERSIONED_TEST
             if (asset.Summary.PackageFlags.HasFlag(PackageFlags.UnversionedProperties))
             {
-                ExportData = new UnversionedObject();
+                throw new NotSupportedException("Unversioned UObject Properties are not supported");
             }
-            else
-            {
-            #endif 
-                ExportData.Deserialize(buffer, asset, ref cursor);
-                Reserved = SpanHelper.ReadLittleInt(buffer, ref cursor);
-            #if DEBUG && UNVERSIONED_TEST
-            }
-            #endif
+            ExportData.Deserialize(buffer, asset, ref cursor);
+            Reserved = SpanHelper.ReadLittleInt(buffer, ref cursor);
         }
 
         public virtual void Serialize(ref Memory<byte> buffer, AssetFile asset, ref int cursor)
