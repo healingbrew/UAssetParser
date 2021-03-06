@@ -18,7 +18,7 @@ namespace UObject.ObjectModel
         {
             base.Deserialize(buffer, asset, ref cursor);
             asset.Stage = SerializationStage.Data;
-            var count = SpanHelper.ReadLittleInt(buffer, ref cursor);
+            var count = Math.Abs(SpanHelper.ReadLittleInt(buffer, ref cursor));
             for (var i = 0; i < count; ++i)
             {
                 var key = new Name();
